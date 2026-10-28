@@ -19,6 +19,23 @@ class AccountMove(models.Model):
     opti_amount_total_without_surcharge = fields.Float(copy=False)
     opti_surcharge_label = fields.Char(copy=False)
 
+    def _has_to_be_paid(self):
+        # Portal users have no access to payment.transaction. This check only
+        # returns a boolean, so read the linked transactions as superuser.
+        self.ensure_one()
+        if self.env.su:
+            return super()._has_to_be_paid()
+        return self.sudo()._has_to_be_paid()
+
+    def _get_online_payment_error(self):
+        self.ensure_one()
+        parent = getattr(super(), '_get_online_payment_error', None)
+        if parent is None:
+            return False
+        if self.env.su:
+            return parent()
+        return self.sudo()._get_online_payment_error()
+
     def _opti_epd_factor(self):
         """Share of the invoice that is still due after an early payment discount.
 

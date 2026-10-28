@@ -84,4 +84,10 @@
             </div>
         </t>
     </template>
+
+    <template id="portal_invoice_page_transaction_access" inherit_id="account.portal_invoice_page" priority="20">
+        <xpath expr="//t[@t-set='pending_txs']" position="attributes">
+            <attribute name="t-value">invoice.sudo().transaction_ids.filtered(lambda tx: tx.state in ('pending', 'authorized') and tx.provider_code not in ('none', 'custom'))</attribute>
+        </xpath>
+    </template>
 </odoo>
