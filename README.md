@@ -19,4 +19,4 @@ Author: optiOdoo Solutions
 Support: optiodoosolutions@gmail.com
 Website: https://www.optiodoo.com
 License: LGPL-3
-Price in the manifest: 39 USD
+Price in the manifest: 75 USD
