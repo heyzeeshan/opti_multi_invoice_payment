@@ -1,51 +1,29 @@
 /** @odoo-module */
 
-import publicWidget from "@web/legacy/js/public/public_widget";
+import { Interaction } from "@web/public/interaction";
+import { registry } from "@web/core/registry";
 
-publicWidget.registry.OptiMultiInvoicePayment = publicWidget.Widget.extend({
-    selector: ".o_opti_pay_bar",
-    events: {
-        "click .o_opti_pay_selected": "_onPay",
-    },
+export class OptiMultiInvoicePayment extends Interaction {
+    static selector = ".o_opti_pay_bar";
+    dynamicContent = {
+        ".o_opti_pay_selected": { "t-on-click": this.onPay },
+        ".o_opti_invoice_check": { "t-on-change": this.update },
+        ".o_opti_invoice_check_all": { "t-on-change": this.onSelectAll },
+    };
 
-    /**
-     * Keep the pay button in step with the invoice checkboxes.
-     *
-     * @override
-     */
-    start() {
+    setup() {
         this.checkboxes = [...document.querySelectorAll(".o_opti_invoice_check")];
         this.selectAll = document.querySelector(".o_opti_invoice_check_all");
         this.warning = document.querySelector(".o_opti_currency_warning");
-        const refresh = () => this._update();
-        for (const checkbox of this.checkboxes) {
-            checkbox.addEventListener("change", refresh);
-        }
-        if (this.selectAll) {
-            this.selectAll.addEventListener("change", (event) => {
-                for (const checkbox of this.checkboxes) {
-                    checkbox.checked = event.currentTarget.checked;
-                }
-                this._update();
-            });
-        }
-        this._update();
-        return this._super(...arguments);
-    },
+        this.update();
+    }
 
-    /**
-     * @private
-     * @returns {HTMLInputElement[]}
-     */
-    _selected() {
+    selected() {
         return this.checkboxes.filter((checkbox) => checkbox.checked);
-    },
+    }
 
-    /**
-     * @private
-     */
-    _update() {
-        const selected = this._selected();
+    update() {
+        const selected = this.selected();
         const button = this.el.querySelector(".o_opti_pay_selected");
         const count = this.el.querySelector(".o_opti_pay_count");
         const currencies = new Set(selected.map((checkbox) => checkbox.dataset.currencyId));
@@ -66,24 +44,26 @@ publicWidget.registry.OptiMultiInvoicePayment = publicWidget.Widget.extend({
             }
         }
         if (this.selectAll) {
-            this.selectAll.checked = this.checkboxes.length > 0
-                && selected.length === this.checkboxes.length;
+            this.selectAll.checked = this.checkboxes.length > 0 && selected.length === this.checkboxes.length;
         }
-    },
+    }
 
-    /**
-     * @private
-     * @param {Event} ev
-     */
-    _onPay(ev) {
+    onSelectAll(ev) {
+        for (const checkbox of this.checkboxes) {
+            checkbox.checked = ev.currentTarget.checked;
+        }
+        this.update();
+    }
+
+    onPay(ev) {
         ev.preventDefault();
-        const selected = this._selected();
+        const selected = this.selected();
         if (!selected.length) {
             return;
         }
         const currencies = new Set(selected.map((checkbox) => checkbox.dataset.currencyId));
         if (currencies.size > 1) {
-            this._update();
+            this.update();
             return;
         }
         const ids = document.getElementById("o_opti_invoice_ids");
@@ -93,5 +73,10 @@ publicWidget.registry.OptiMultiInvoicePayment = publicWidget.Widget.extend({
         }
         ids.value = selected.map((checkbox) => checkbox.value).join(",");
         form.submit();
-    },
-});
+    }
+}
+
+registry.category("public.interactions").add(
+    "opti_multi_invoice_payment.pay_bar",
+    OptiMultiInvoicePayment,
+);

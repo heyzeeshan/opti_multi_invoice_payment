@@ -92,7 +92,7 @@ class OptiPortalAccount(PortalAccount):
         )
         return request.render('opti_multi_invoice_payment.portal_multi_invoice_pay', values)
 
-    @route('/my/invoices/pay/transaction/<string:invoice_ids>', type='json', auth='user')
+    @route('/my/invoices/pay/transaction/<string:invoice_ids>', type='jsonrpc', auth='user')
     def portal_pay_invoices_transaction(self, invoice_ids, access_token, **kwargs):
         try:
             invoices = self._opti_selected_invoices(invoice_ids)
