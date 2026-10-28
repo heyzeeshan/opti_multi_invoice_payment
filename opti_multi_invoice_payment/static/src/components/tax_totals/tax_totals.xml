@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="opti_multi_invoice_payment.TaxTotalsField" t-inherit="account.TaxTotalsField" t-inherit-mode="extension">
+        <xpath expr="//tbody" position="inside">
+            <tr t-if="totals.formatted_amount_total_without_surcharge and totals.opti_surcharge_label">
+                <td class="o_td_label">
+                    <label class="o_form_label o_tax_total_label">
+                        Total
+                        <strong>without</strong>
+                        <span t-out="totals.opti_surcharge_label"/>
+                    </label>
+                </td>
+                <td class="o_list_monetary">
+                    <span t-out="totals.formatted_amount_total_without_surcharge" style="white-space: nowrap;"/>
+                </td>
+            </tr>
+        </xpath>
+    </t>
+</templates>

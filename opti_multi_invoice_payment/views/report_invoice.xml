@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="document_tax_totals_surcharge" inherit_id="account.document_tax_totals_template">
+        <xpath expr="//tr[hasclass('o_total')]" position="after">
+            <tr t-if="tax_totals.get('formatted_amount_total_without_surcharge') and tax_totals.get('opti_surcharge_label')">
+                <td>
+                    Total
+                    <strong>without</strong>
+                    <span t-out="tax_totals['opti_surcharge_label']"/>
+                </td>
+                <td class="text-end">
+                    <span t-out="tax_totals['formatted_amount_total_without_surcharge']"/>
+                </td>
+            </tr>
+        </xpath>
+    </template>
+</odoo>

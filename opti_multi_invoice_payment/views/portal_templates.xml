@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_invoices_multi_select" name="Select invoices to pay together"
+        inherit_id="account.portal_my_invoices">
+        <xpath expr="//t[@t-call='portal.portal_searchbar']" position="after">
+            <div class="o_opti_pay_bar d-print-none">
+                <div>
+                    <strong class="o_opti_pay_count">No invoices selected</strong>
+                    <div class="text-muted small">Select open invoices and pay them in one payment.</div>
+                </div>
+                <button type="button" class="btn btn-primary o_opti_pay_selected" disabled="disabled">
+                    Pay Selected
+                </button>
+            </div>
+            <div class="alert alert-warning d-none o_opti_currency_warning" role="alert">
+                Select invoices that use the same currency.
+            </div>
+            <form id="o_opti_multi_pay_form" action="/my/invoices/pay" method="post" class="d-none">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="invoice_ids" id="o_opti_invoice_ids"/>
+            </form>
+        </xpath>
+        <xpath expr="//th[@name='invoice_number']" position="before">
+            <th class="text-center" style="width: 42px;">
+                <input type="checkbox" class="form-check-input o_opti_invoice_check_all"
+                    title="Select all invoices waiting for payment" aria-label="Select all"/>
+            </th>
+        </xpath>
+        <xpath expr="//a[@t-att-href='invoice.get_portal_url()']/parent::td" position="before">
+            <td class="text-center">
+                <input t-if="invoice._has_to_be_paid()" type="checkbox"
+                    class="form-check-input o_opti_invoice_check"
+                    t-att-value="invoice.id"
+                    t-att-data-currency-id="invoice.currency_id.id"
+                    t-att-aria-label="invoice.name"/>
+            </td>
+        </xpath>
+    </template>
+
+    <template id="portal_multi_invoice_pay" name="Pay selected invoices">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title">Pay Invoices</t>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h3>Pay invoices</h3>
+                    <p class="text-muted">
+                        A payment method with a surcharge adds that percent of the untaxed amount as an invoice line when you pay.
+                    </p>
+                    <div t-if="opti_error" class="alert alert-danger" role="alert">
+                        <p t-out="opti_error"/>
+                        <a href="/my/invoices" class="btn btn-secondary mt-2">Back to invoices</a>
+                    </div>
+                    <t t-if="not opti_error">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Due date</th>
+                                    <th class="text-end">Amount due</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="invoices" t-as="invoice">
+                                    <td>
+                                        <a t-att-href="invoice.get_portal_url()"><t t-out="invoice.name"/></a>
+                                    </td>
+                                    <td><span t-field="invoice.invoice_date_due"/></td>
+                                    <td class="text-end">
+                                        <span t-out="invoice.amount_residual"
+                                            t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div t-if="company_mismatch">
+                            <t t-call="payment.company_mismatch_warning"/>
+                        </div>
+                        <div t-elif="not payment_methods_sudo and not tokens_sudo" class="alert alert-warning">
+                            <strong>No suitable payment method could be found.</strong>
+                        </div>
+                        <t t-else="" t-call="payment.form"/>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

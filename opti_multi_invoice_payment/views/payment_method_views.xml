@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_method_form_surcharge" model="ir.ui.view">
+        <field name="name">payment.method.form.opti.surcharge</field>
+        <field name="model">payment.method</field>
+        <field name="inherit_id" ref="payment.payment_method_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position="after">
+                <field name="opti_surcharge_custom" invisible="1"/>
+                <field name="opti_surcharge" string="Surcharge (%)" invisible="not opti_surcharge_custom"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

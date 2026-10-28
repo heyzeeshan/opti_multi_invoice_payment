@@ -1,0 +1,18 @@
+.o_opti_pay_bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 1rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background: #fff;
+}
+
+@media (max-width: 576px) {
+    .o_opti_pay_bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

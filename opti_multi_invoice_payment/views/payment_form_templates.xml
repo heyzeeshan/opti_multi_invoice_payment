@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="payment_method_surcharge" inherit_id="payment.method_form">
+        <xpath expr="//label[hasclass('o_payment_option_label')]" position="after">
+            <t t-if="pm_sudo._opti_show_surcharge_note(opti_surcharge_invoices, opti_multi_pay)">
+                <t t-set="opti_preview" t-value="opti_surcharge_invoices._opti_surcharge_preview(pm_sudo)"/>
+                <div t-if="opti_preview['surcharge']" class="w-100 text-muted fst-italic small">
+                    <div>
+                        <t t-out="pm_sudo._opti_surcharge_percent_label()"/>% surcharge:
+                        <span t-out="opti_preview['surcharge']"
+                            t-options='{"widget": "monetary", "display_currency": opti_surcharge_invoices[:1].currency_id}'/>
+                    </div>
+                    <div>
+                        Total with surcharge:
+                        <span t-out="opti_preview['payable']"
+                            t-options='{"widget": "monetary", "display_currency": opti_surcharge_invoices[:1].currency_id}'/>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Keep every method available on the multi-invoice page, including when
+         another module hides surcharged methods outside the single invoice page. -->
+    <template id="payment_form_multi_methods" inherit_id="payment.form">
+        <xpath expr="//div[@id='o_payment_methods']" position="attributes">
+            <attribute name="t-if">payment_methods_sudo and not opti_multi_pay</attribute>
+        </xpath>
+        <xpath expr="//div[@id='o_payment_methods']" position="after">
+            <div t-if="opti_multi_pay and payment_methods_sudo" id="o_payment_methods">
+                <h4 class="fs-6 small text-uppercase fw-bolder">Choose a payment method</h4>
+                <ul class="list-group">
+                    <t t-foreach="payment_methods_sudo" t-as="pm_sudo">
+                        <li name="o_payment_option" class="list-group-item d-flex flex-column gap-2 py-3 o_outline">
+                            <t t-call="payment.method_form">
+                                <t t-set="is_selected" t-value="pm_sudo.id == selected_method_id"/>
+                            </t>
+                        </li>
+                    </t>
+                </ul>
+            </div>
+        </xpath>
+    </template>
+</odoo>
