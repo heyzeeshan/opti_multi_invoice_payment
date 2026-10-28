@@ -4,7 +4,7 @@
 
 {
     'name': 'Portal Multi Invoice Payment with Card Surcharge',
-    'version': '17.0.1.0.0',
+    'version': '18.0.1.0.0',
     'category': 'Accounting/Payment',
     'summary': 'Pay several customer invoices from the portal, and add a surcharge line from the payment method.',
     'description': """
