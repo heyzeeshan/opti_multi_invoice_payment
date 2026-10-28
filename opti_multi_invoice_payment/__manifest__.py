@@ -37,7 +37,7 @@ invoice line and included in the amount sent to the provider.
         ],
     },
     'images': ['static/description/banner.png'],
-    'price': 39.00,
+    'price': 75.00,
     'currency': 'USD',
     'installable': True,
     'application': False,
